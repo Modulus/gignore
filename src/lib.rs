@@ -31,6 +31,11 @@ pub fn extract_ignore_file_name(path_buf: PathBuf) -> Option<String> {
     return Some(file_name.split("/").last()?.to_string());
 }
 
+pub fn get_prefix(file_name: &str) -> Option<String> {
+    let prefix = file_name.split(".").next()?;
+    return Some(prefix.to_string());
+}
+
 
 
 #[cfg(test)]
@@ -46,6 +51,14 @@ mod tests {
         let result = extract_ignore_file_name(file_name);
         assert!(result.is_some());
         assert!(result.unwrap() == "SymphonyCMS.gitignore");
+    }
+
+    #[test]
+    fn test_get_prefix_from_file_name_returns_valid_prefix(){
+        let file_name = "SymphonyCMS.gitignore";
+        let result = get_prefix(file_name);
+        assert!(result.is_some());
+        assert!(result.unwrap() == "SymphonyCMS");
     }
 
 }
