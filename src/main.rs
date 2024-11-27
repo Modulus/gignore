@@ -1,19 +1,10 @@
-use std::fs::File;
-use std::io::prelude::*;
 use std::fs;
 use std::path::PathBuf;
-use git2::Repository;
-
+use gignore::clone_gitignore_repo;
 
 fn main() -> std::io::Result<()> {
 
-    if !fs::exists("/tmp/github/gitignore").expect("Folder does not exist, creating") {
-        let url = "https://github.com/github/gitignore.git";
-        let repo = match Repository::clone(url, "/tmp/github/gitignore") {
-            Ok(repo) => repo,
-            Err(e) => panic!("failed to clone: {}", e),
-        };
-    }
+    clone_gitignore_repo("/tmp/github/gitignore", "https://github.com/github/gitignore.git");
 
 
 
@@ -25,6 +16,8 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
+
+
 
 fn extract_ignore_file_names(folder: &str) -> Result<Vec<String>, std::io::Error> {
     let files = fs::read_dir(folder)?.into_iter().filter_map(| entry | {
@@ -45,7 +38,7 @@ fn extract_ignore_file_name(path_buf: PathBuf) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use std::{path::PathBuf, result};
+    use std::path::PathBuf;
 
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
