@@ -18,7 +18,7 @@ pub fn clone_gitignore_repo(local_repo_path: &str, repo_url: &str) {
 
 pub fn extract_ignore_file_names(folder: &str) -> Result<Vec<String>, std::io::Error> {
     let files = fs::read_dir(folder)?.into_iter().filter_map(| entry | {
-        let entry = entry.unwrap();
+        let entry = entry.ok()?;
         let current_file_name = entry.path();
         let result = extract_ignore_file_name(current_file_name);
         result
