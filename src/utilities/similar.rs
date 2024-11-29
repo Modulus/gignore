@@ -1,12 +1,32 @@
 
 
-pub fn similar(a: &str, b: &str) -> bool {
-    // a.to_lowercase().contains(b.to_lowercase().as_str()) || b.to_lowercase().contains(a.to_lowercase().as_str())
-    return false;
+
+pub fn find_similar(a: &str, b: &Vec<String>) -> Vec<String> {
+    let mut matches : Vec<String> = Vec::new();
+    for item in b {
+        let item_prefix = extract_name(&item);
+        if let Some(extracted_name) = item_prefix {
+            if a.to_lowercase().eq(extracted_name.to_lowercase().as_str()) {
+                matches.push(item.clone());
+            }
+        }
+    }
+    return matches;
+}
+
+fn extract_name(file_name: &str) -> Option<String> {
+    let mut name = file_name.to_string();
+    let index = name.find('.')?;
+    name.truncate(index);
+    Some(name)
 }
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Borrow;
+
+    use crate::utilities::similar;
+
     use super::*;
 
     fn get_string_vec() -> Vec<String> {
@@ -158,9 +178,47 @@ mod tests {
     }
 
     #[test]
-    fn test_example_function() {
+    fn extract_name_has_gitignore_in_name_removes_postfix(){
+        let result = extract_name("C++.gitignore");
+        assert_eq!(result.unwrap(), "C++");
+    }
+
+    #[test]
+    fn test_help_function_works() {
         let result = get_string_vec();
         assert!(result.len() >= 142);
+    }
+
+
+    #[test]
+    fn test_find_similar_using_c(){
+        let result = find_similar("c", &get_string_vec());
+        assert!(!result.is_empty());
+        // assert!(result.contains("C++.gitignore".to_string().borrow()));    
+        assert!(result.contains("C.gitignore".to_string().borrow()));    
+        assert!(result.len() <= 1);
+        assert!(result.len() < 2);
+    }
+
+
+    #[test]
+    fn test_find_similar_using_rust(){
+        let result = find_similar("rust", &get_string_vec());
+        assert!(!result.is_empty());
+        // assert!(result.contains("C++.gitignore".to_string().borrow()));    
+        assert!(result.contains("Rust.gitignore".to_string().borrow()));    
+        assert!(result.len() <= 1);
+        assert!(result.len() < 2);
+    }
+
+    #[test]
+    fn test_find_similar_using_python(){
+        let result = find_similar("python", &get_string_vec());
+        assert!(!result.is_empty());
+        // assert!(result.contains("C++.gitignore".to_string().borrow()));    
+        assert!(result.contains("Python.gitignore".to_string().borrow()));    
+        assert!(result.len() <= 1);
+        assert!(result.len() < 2);
     }
 
 
